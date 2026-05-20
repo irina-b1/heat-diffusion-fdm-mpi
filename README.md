@@ -151,6 +151,13 @@ Iz `results/summary.md` dobimo naslednje povprečne čase:
 - `T₄ ≈ 11.34 s`
 - `T₈ ≈ 11.70 s`
 
+| p | T₁ | T₂ | T₃ | avg Tₚ [s] | Sₚ | Eₚ | Karp-Flatt e_p |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 30.324379 | 32.498379 | 34.044706 | 32.289155 | 1.000 | 1.000 | 0.0000 |
+| 2 | 18.893115 | 18.909901 | 19.416233 | 19.073083 | 1.693 | 0.846 | 0.1814 |
+| 4 | 11.587902 | 11.624747 | 10.807279 | 11.339976 | 2.847 | 0.712 | 0.1349 |
+| 8 | 12.235754 | 11.439201 | 11.423540 | 11.699498 | 2.760 | 0.345 | 0.2712 |
+
 Rezultati kažejo jasno izboljšanje do `p = 4`, kjer se čas izvajanja občutno zmanjša. Pri `p = 8` pa se trend ustavi — čas se ne izboljša več, ampak se celo rahlo poslabša v primerjavi z `p = 4`. To pomeni, da se pri tej velikosti problema začnejo dominatno pojavljati paralelni nadglavni stroški.
 
 To lahko vidimo tudi iz pospeška in učinkovitosti:
