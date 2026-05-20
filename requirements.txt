@@ -1,0 +1,7 @@
+# Core numerical + MPI
+numpy
+mpi4py
+
+# Demo animation output (GIF)
+matplotlib
+pillow
