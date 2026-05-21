@@ -194,7 +194,6 @@ To pomeni, da pri `p=8` vsak proces prispeva bistveno manj koristnega dela kot p
 ### Karp-Flatt graf
 
 ![Karp-Flattova metrika glede na število procesov](results/karp_flatt_vs_p.png)
-
 Karp-Flattova metrika ocenjuje vpliv ne-paralelizabilnega dela in paralelnih overhead stroškov.
 
 Vrednosti:
@@ -213,14 +212,18 @@ Po začetnih rezultatih (`512×512`, `20000` iteracij) se je skaliranje ustavilo
 
 ### Dodatni eksperimenti
 
-### Dodatni eksperimenti
-
 | Konfiguracija | p=1 [s] | p=2 [s] | p=4 [s] | p=8 [s] | S₈ |
 |---|---:|---:|---:|---:|---:|
 | `512×512`, `20000` | 32.29 | 19.07 | 11.34 | 11.70 | 2.76 |
 | `1024×1024`, `5000` | 33.22 | 21.18 | 15.13 | 15.02 | 2.21 |
 | `2048×2048`, `5000` | 214.30 | 160.12 | 138.61 | 130.92 | 1.64 |
 | `2048×2048`, `1250` | 51.87 | 38.75 | 35.83 | 33.46 | 1.55 |
+
+Grid 2048 x 1025 iteracij:
+| | |
+|---:|:---|
+| ![Čas izvajanja](results/runtime_vs_p.png) | ![Pospešek](results/speedup_vs_p.png) |
+| ![Učinkovitost](results/efficiency_vs_p.png) | ![Karp-Flatt metrika](results/karp_flatt_vs_p.png) |
 
 Če bi bil glavni problem premajhna mreža, bi pričakovali izboljšanje skaliranja pri večjih problemih. Tega ne opazimo.
 
