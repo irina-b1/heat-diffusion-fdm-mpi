@@ -120,16 +120,6 @@ Ustvari:
 - `results/efficiency_vs_p.png`
 - `results/karp_flatt_vs_p.png`
 
-### Grafi
-
-![Čas izvajanja glede na število procesov]
-
-![Pospešek glede na število procesov]
-
-![Učinkovitost glede na število procesov]
-
-![Karp-Flattova metrika glede na število procesov]
-
 ## Interpretacija rezultatov
 
 Izvedli smo meritve **strong scalinga** (fiksna velikost problema) za MPI 2D difuzijo toplote. Osnovni eksperiment je uporabil grid `N=512` in `20000` iteracij, meritve pa so bile izvedene za `p ∈ {1,2,4,8}`. Vsaka konfiguracija je bila zagnana trikrat, pri interpretaciji pa uporabljamo povprečne čase izvajanja.
@@ -222,8 +212,8 @@ Po začetnih rezultatih (`512×512`, `20000` iteracij) se je skaliranje ustavilo
 Grid 2048 x 1025 iteracij:
 | | |
 |---:|:---|
-| ![Čas izvajanja](results/runtime_vs_p.png) | ![Pospešek](results/speedup_vs_p.png) |
-| ![Učinkovitost](results/efficiency_vs_p.png) | ![Karp-Flatt metrika](results/karp_flatt_vs_p.png) |
+| ![Čas izvajanja](results/N2048_I1250/runtime_vs_p.png) | ![Pospešek](results/N2048_I1250/speedup_vs_p.png) |
+| ![Učinkovitost](results/N2048_I1250/efficiency_vs_p.png) | ![Karp-Flatt metrika](results/N2048_I1250/karp_flatt_vs_p.png) |
 
 Če bi bil glavni problem premajhna mreža, bi pričakovali izboljšanje skaliranja pri večjih problemih. Tega ne opazimo.
 
