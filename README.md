@@ -122,13 +122,13 @@ Ustvari:
 
 ### Grafi
 
-![Čas izvajanja glede na število procesov](results/runtime_vs_p.png)
+![Čas izvajanja glede na število procesov]
 
-![Pospešek glede na število procesov](results/speedup_vs_p.png)
+![Pospešek glede na število procesov]
 
-![Učinkovitost glede na število procesov](results/efficiency_vs_p.png)
+![Učinkovitost glede na število procesov]
 
-![Karp-Flattova metrika glede na število procesov](results/karp_flatt_vs_p.png)
+![Karp-Flattova metrika glede na število procesov]
 
 ## Interpretacija rezultatov
 
