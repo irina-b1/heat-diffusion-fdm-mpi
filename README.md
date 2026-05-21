@@ -132,64 +132,138 @@ Ustvari:
 
 ## Interpretacija rezultatov
 
-Izvedli smo meritve **strong scalinga** (fiksna velikost problema) za Jacobi 2D reševalnik difuzije toplote pri velikosti mreže `N=512` in `20000` iteracijah. Za vsako število procesov `p ∈ {1, 2, 4, 8}` smo meritve ponovili trikrat in uporabili povprečne vrednosti.
+Izvedli smo meritve **strong scalinga** (fiksna velikost problema) za MPI 2D difuzijo toplote. Osnovni eksperiment je uporabil grid `N=512` in `20000` iteracij, meritve pa so bile izvedene za `p ∈ {1,2,4,8}`. Vsaka konfiguracija je bila zagnana trikrat, pri interpretaciji pa uporabljamo povprečne čase izvajanja.
 
-Osnovne metrike, ki jih uporabljamo, so:
+Uporabljene metrike:
 
 - pospešek: `Sₚ = T₁ / Tₚ`
 - učinkovitost: `Eₚ = Sₚ / p`
-- Karp-Flattova metrika: `e_p = (1/Sₚ - 1/p) / (1 - 1/p)`
+- Karp-Flattova metrika:
+`eₚ = (1/Sₚ - 1/p)/(1 - 1/p)`
 
-Graf pospeška vključuje tudi idealno referenčno premico `S = p`, ki ne predstavlja dejanskega modela, ampak služi kot orientacija za primerjavo z idealnim linearno skaliranim izvajanjem.
+### Osnovni strong-scaling rezultat (`512×512`, `20000` iteracij)
 
-### Povzetek rezultatov
+| p | avg Tₚ [s] | Sₚ | Eₚ | Karp-Flatt eₚ |
+|---:|---:|---:|---:|---:|
+|1|32.289|1.000|1.000|0.000|
+|2|19.073|1.693|0.846|0.181|
+|4|11.340|2.847|0.712|0.135|
+|8|11.699|2.760|0.345|0.271|
 
-Iz `results/summary.md` dobimo naslednje povprečne čase:
+Rezultati kažejo dobro skaliranje do `p=4`.
 
-- `T₁ ≈ 32.29 s`
-- `T₂ ≈ 19.07 s`
-- `T₄ ≈ 11.34 s`
-- `T₈ ≈ 11.70 s`
+Pri prehodu:
 
-| p | T₁ | T₂ | T₃ | avg Tₚ [s] | Sₚ | Eₚ | Karp-Flatt e_p |
-|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 30.324379 | 32.498379 | 34.044706 | 32.289155 | 1.000 | 1.000 | 0.0000 |
-| 2 | 18.893115 | 18.909901 | 19.416233 | 19.073083 | 1.693 | 0.846 | 0.1814 |
-| 4 | 11.587902 | 11.624747 | 10.807279 | 11.339976 | 2.847 | 0.712 | 0.1349 |
-| 8 | 12.235754 | 11.439201 | 11.423540 | 11.699498 | 2.760 | 0.345 | 0.2712 |
+- `1 → 2` procesov se čas zmanjša za približno **41 %**
+- `2 → 4` procesov za dodatnih **40 %**
+- `4 → 8` procesov pa izboljšanja praktično ni
 
-Rezultati kažejo jasno izboljšanje do `p = 4`, kjer se čas izvajanja občutno zmanjša. Pri `p = 8` pa se trend ustavi — čas se ne izboljša več, ampak se celo rahlo poslabša v primerjavi z `p = 4`. To pomeni, da se pri tej velikosti problema začnejo dominatno pojavljati paralelni nadglavni stroški.
+Pri `p=8` se čas celo rahlo poveča (`11.34 s → 11.70 s`), zato dodatni procesi ne prinesejo več koristi.
 
-To lahko vidimo tudi iz pospeška in učinkovitosti:
+### Runtime graf
 
-- `p = 2`: `S₂ ≈ 1.69`, `E₂ ≈ 0.85`
-- `p = 4`: `S₄ ≈ 2.85`, `E₄ ≈ 0.71`
-- `p = 8`: `S₈ ≈ 2.76`, `E₈ ≈ 0.35`
+![Čas izvajanja glede na število procesov](results/runtime_vs_p.png)
 
-### Karp-Flattova metrika
+Graf jasno pokaže hitro zmanjševanje časa do `p=4`, nato pa skoraj popolno stagnacijo.
 
-Karp-Flattova metrika nam pomaga oceniti delež ne-paralelizabilnega dela oziroma nadglavnih stroškov:
+### Speedup graf
+
+![Pospešek glede na število procesov](results/speedup_vs_p.png)
+
+Idealna referenčna premica (`S=p`) predstavlja popolnoma linearno skaliranje. Dejanski rezultati ji sledijo pri manjšem številu procesov, nato pa začnejo odstopati.
+
+Pri `p=8` dosežemo:
+
+- `S₈ ≈ 2.76`
+- idealno bi bilo `S₈ = 8`
+
+Razlika pomeni, da dodatni procesi ne prispevajo sorazmerno več računske moči.
+
+### Efficiency graf
+
+![Učinkovitost glede na število procesov](results/efficiency_vs_p.png)
+
+Učinkovitost pada z večanjem števila procesov:
+
+- `E₂ ≈ 0.85`
+- `E₄ ≈ 0.71`
+- `E₈ ≈ 0.35`
+
+To pomeni, da pri `p=8` vsak proces prispeva bistveno manj koristnega dela kot pri manjšem številu procesov.
+
+### Karp-Flatt graf
+
+![Karp-Flattova metrika glede na število procesov](results/karp_flatt_vs_p.png)
+
+Karp-Flattova metrika ocenjuje vpliv ne-paralelizabilnega dela in paralelnih overhead stroškov.
+
+Vrednosti:
 
 - `e₂ ≈ 0.18`
-- `e₄ ≈ 0.14`
+- `e₄ ≈ 0.13`
 - `e₈ ≈ 0.27`
 
-Opazen porast pri `p = 8` kaže, da se delež časa, ki ni skalabilen (komunikacija, sinhronizacija in drugi nadglavni stroški), bistveno poveča. To je skladno z opažanjem, da dodatni procesi ne prinesejo več izboljšav.
+Pri `p=8` se vrednost skoraj podvoji, kar kaže na opazno povečanje komunikacijskih in sinhronizacijskih stroškov.
 
-### Verjetna ozka grla
+---
 
-Pri Jacobi metodi z izmenjavo halo robov se pri večjem številu procesov (pri fiksnem `N`) pojavijo tipična ozka grla:
+## Analiza vzroka slabega skaliranja
 
-- **MPI komunikacija**: vsak korak zahteva izmenjavo robnih podatkov med sosednjimi procesi, kar postane relativno dražje, ko se velikost lokalnega dela manjša.
-- **Sinhronizacija**: procesi morajo čakati na najpočasnejšega soseda, kar omejuje skupno hitrost.
-- **Omejitve pomnilniške pasovne širine**: Jacobi je zelo odvisen od dostopa do pomnilnika, zato se hitro približa saturaciji.
-- **Slabše razmerje računanje/komunikacija**: z več procesi se zmanjša količina računanja na proces, medtem ko komunikacija ostaja relativno konstantna.
+Po začetnih rezultatih (`512×512`, `20000` iteracij) se je skaliranje ustavilo pri `p=8`. Ker je obstajal sum, da je problem posledica premajhne mreže in velikega števila iteracij, smo izvedli dodatne meritve z večjimi mrežami in manjšim številom časovnih korakov.
 
-Zato pri `p = 8` dodatna paralelizacija ne prinese več koristi — komunikacijski stroški in sinhronizacija preprosto izničijo dobiček računanja.
+### Dodatni eksperimenti
+
+### Dodatni eksperimenti
+
+| Konfiguracija | p=1 [s] | p=2 [s] | p=4 [s] | p=8 [s] | S₈ |
+|---|---:|---:|---:|---:|---:|
+| `512×512`, `20000` | 32.29 | 19.07 | 11.34 | 11.70 | 2.76 |
+| `1024×1024`, `5000` | 33.22 | 21.18 | 15.13 | 15.02 | 2.21 |
+| `2048×2048`, `5000` | 214.30 | 160.12 | 138.61 | 130.92 | 1.64 |
+| `2048×2048`, `1250` | 51.87 | 38.75 | 35.83 | 33.46 | 1.55 |
+
+Če bi bil glavni problem premajhna mreža, bi pričakovali izboljšanje skaliranja pri večjih problemih. Tega ne opazimo.
+
+Nasprotno, pri večjih mrežah se pospešek celo nekoliko zmanjša.
+
+To kaže, da začetni rezultat pri `512×512` ni bil zgolj posledica premajhne velikosti problema.
+
+### Razčlenitev časa izvajanja
+
+Za konfiguracijo `2048×2048`, `1250` iteracij smo dodatno merili:
+
+- `T_total`
+- `T_halo`
+- `T_stencil`
+
+Povprečne vrednosti:
+
+| p | T_total [s] | T_halo [s] | T_stencil [s] |
+|---:|---:|---:|---:|
+|1|51.87|0.10|40.94|
+|2|38.75|0.59|33.67|
+|4|35.83|1.69|31.09|
+|8|33.66|6.03|26.19|
+
+Rezultati pokažejo, da se računski del pravilno paralelizira:
+
+- `T_stencil` se zmanjša iz `40.94 s` na `26.19 s`
+
+Komunikacijski del pa se povečuje:
+
+- `T_halo` naraste iz `0.10 s` na `6.03 s`
+
+Vendar komunikacija pri `p=8` predstavlja približno:
+
+`6.03 / 33.66 ≈ 18%`
+
+skupnega časa izvajanja.
+
+To pomeni, da komunikacija sicer prispeva k dodatnim stroškom, vendar sama po sebi ne pojasni slabega skaliranja.
 
 ### Sklep
 
-Rezultati kažejo, da se reševalnik dobro skalira do približno `p = 4`, kjer še vedno ohranja visoko učinkovitost in občuten pospešek. Pri `p = 8` pa postanejo dominantni komunikacijski in sinhronizacijski stroški, kar se odrazi v stagnaciji pospeška in izrazitem padcu učinkovitosti. Za velikost problema `N = 512` je zato optimalno območje skaliranja do približno štirih procesov.
+Dodatni eksperimenti kažejo, da slabo skaliranje ni posledica zgolj premajhne mreže. Računski del se pravilno paralelizira, vendar pridobljeni čas postopoma zmanjšujejo drugi stroški izvajanja. Komunikacija prispeva del tega učinka, vendar po izmerjenih vrednostih ni glavni omejitveni dejavnik.
 
 ## Demo animacija (GIF)
 
